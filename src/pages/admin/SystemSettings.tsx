@@ -227,15 +227,115 @@ function RolesManager() {
 /* ── Admin Accounts Manager ── */
 function AdminAccountsManager() {
   const [search, setSearch] = useState('');
-  const accounts = [
+  const [accounts, setAccounts] = useState([
     { id: 1, username: 'admin', name: '系统管理员', email: 'admin@apimix.ai', role: '超级管理员', status: 'active', lastLogin: '2026-05-09 14:30', createdAt: '2024-01-01' },
     { id: 2, username: 'ops01', name: '运维小王', email: 'ops01@apimix.ai', role: '运维管理员', status: 'active', lastLogin: '2026-05-09 12:15', createdAt: '2024-03-15' },
     { id: 3, username: 'ops02', name: '运维小李', email: 'ops02@apimix.ai', role: '运维管理员', status: 'active', lastLogin: '2026-05-08 18:00', createdAt: '2024-06-20' },
     { id: 4, username: 'finance01', name: '财务小张', email: 'finance@apimix.ai', role: '财务人员', status: 'active', lastLogin: '2026-05-09 09:00', createdAt: '2024-08-01' },
     { id: 5, username: 'cs01', name: '客服小陈', email: 'cs01@apimix.ai', role: '客服人员', status: 'inactive', lastLogin: '2026-04-20 16:45', createdAt: '2025-01-10' },
     { id: 6, username: 'auditor01', name: '审计小赵', email: 'audit@apimix.ai', role: '审计员', status: 'active', lastLogin: '2026-05-07 11:20', createdAt: '2025-02-01' },
-  ];
+  ]);
+  const [editModal, setEditModal] = useState<any>(null);
+  const [addModal, setAddModal] = useState(false);
+  const [formUsername, setFormUsername] = useState('');
+  const [formName, setFormName] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formRole, setFormRole] = useState('运维管理员');
+  const [formStatus, setFormStatus] = useState<'active' | 'inactive'>('active');
+
+  const roles = ['超级管理员', '运维管理员', '财务人员', '客服人员', '审计员'];
   const filtered = accounts.filter(a => !search || a.name.includes(search) || a.username.includes(search) || a.role.includes(search));
+
+  const openEdit = (a: any) => {
+    setEditModal(a);
+    setFormUsername(a.username);
+    setFormName(a.name);
+    setFormEmail(a.email);
+    setFormRole(a.role);
+    setFormStatus(a.status);
+  };
+
+  const openAdd = () => {
+    setAddModal(true);
+    setFormUsername('');
+    setFormName('');
+    setFormEmail('');
+    setFormRole('运维管理员');
+    setFormStatus('active');
+  };
+
+  const closeModal = () => { setEditModal(null); setAddModal(false); };
+
+  const handleSaveEdit = () => {
+    if (!editModal) return;
+    setAccounts(prev => prev.map(a => a.id === editModal.id ? { ...a, username: formUsername, name: formName, email: formEmail, role: formRole, status: formStatus } : a));
+    closeModal();
+  };
+
+  const handleAdd = () => {
+    const newId = Math.max(...accounts.map(a => a.id)) + 1;
+    setAccounts(prev => [...prev, { id: newId, username: formUsername, name: formName, email: formEmail, role: formRole, status: formStatus, lastLogin: '-', createdAt: new Date().toISOString().slice(0, 10) }]);
+    closeModal();
+  };
+
+  const handleDelete = (id: number) => {
+    if (confirm('确定要删除该管理员账号吗？')) {
+      setAccounts(prev => prev.filter(a => a.id !== id));
+    }
+  };
+
+  const toggleStatus = (id: number) => {
+    setAccounts(prev => prev.map(a => a.id === id ? { ...a, status: a.status === 'active' ? 'inactive' : 'active' } : a));
+  };
+
+  const AccountModal = ({ title, onSave }: { title: string; onSave: () => void }) => (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} onClick={closeModal}>
+      <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="bg-[var(--dark-card)] border border-[var(--dark-border)] rounded-2xl shadow-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-space text-lg font-semibold text-white">{title}</h3>
+          <button onClick={closeModal} className="p-1.5 rounded-lg text-[var(--slate-400)] hover:text-white hover:bg-[var(--dark-hover)]"><X className="w-4 h-4" /></button>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs text-[var(--slate-400)] mb-1">账号</label>
+            <input type="text" value={formUsername} onChange={e => setFormUsername(e.target.value)} placeholder="如 ops03"
+              className="w-full h-9 bg-[var(--dark-bg)] border border-[var(--dark-border)] text-white text-sm rounded-lg px-3 outline-none focus:border-[#3366FF]" />
+          </div>
+          <div>
+            <label className="block text-xs text-[var(--slate-400)] mb-1">姓名</label>
+            <input type="text" value={formName} onChange={e => setFormName(e.target.value)} placeholder="姓名"
+              className="w-full h-9 bg-[var(--dark-bg)] border border-[var(--dark-border)] text-white text-sm rounded-lg px-3 outline-none focus:border-[#3366FF]" />
+          </div>
+          <div>
+            <label className="block text-xs text-[var(--slate-400)] mb-1">邮箱</label>
+            <input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder="email@apimix.ai"
+              className="w-full h-9 bg-[var(--dark-bg)] border border-[var(--dark-border)] text-white text-sm rounded-lg px-3 outline-none focus:border-[#3366FF]" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-[var(--slate-400)] mb-1">角色</label>
+              <select value={formRole} onChange={e => setFormRole(e.target.value)}
+                className="w-full h-9 bg-[var(--dark-bg)] border border-[var(--dark-border)] text-white text-sm rounded-lg px-3 outline-none focus:border-[#3366FF]">
+                {roles.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-[var(--slate-400)] mb-1">状态</label>
+              <select value={formStatus} onChange={e => setFormStatus(e.target.value as 'active' | 'inactive')}
+                className="w-full h-9 bg-[var(--dark-bg)] border border-[var(--dark-border)] text-white text-sm rounded-lg px-3 outline-none focus:border-[#3366FF]">
+                <option value="active">正常</option>
+                <option value="inactive">停用</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-3">
+            <button onClick={closeModal} className="px-4 py-2 text-xs text-[var(--slate-300)] hover:text-white hover:bg-[var(--dark-hover)] rounded-lg">取消</button>
+            <button onClick={onSave} className="px-4 py-2 bg-[#3366FF] text-white text-xs rounded-lg hover:bg-[#2244CC]">保存</button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -245,7 +345,7 @@ function AdminAccountsManager() {
           <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="搜索账号..."
             className="h-8 pl-8 pr-3 rounded-lg bg-[var(--dark-card)] border border-[var(--dark-border)] text-xs text-white placeholder-[var(--slate-500)] focus:outline-none focus:border-[#3366FF] w-48" />
         </div>
-        <button className="h-8 px-3 bg-[#3366FF] text-white text-xs rounded-lg hover:bg-[#2244CC] transition-colors flex items-center gap-1">
+        <button onClick={openAdd} className="h-8 px-3 bg-[#3366FF] text-white text-xs rounded-lg hover:bg-[#2244CC] transition-colors flex items-center gap-1">
           <Plus className="w-3.5 h-3.5" />新增账号
         </button>
       </div>
@@ -269,19 +369,28 @@ function AdminAccountsManager() {
                 </td>
                 <td className="py-3 px-4 text-sm text-white">{a.name}</td>
                 <td className="py-3 px-4"><span className="text-[11px] px-2 py-0.5 rounded bg-[var(--dark-hover)] text-[var(--slate-300)]">{a.role}</span></td>
-                <td className="py-3 px-4">{a.status === 'active'
-                  ? <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#10B981]"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />正常</span>
-                  : <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[var(--slate-700)] text-[var(--slate-400)]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--slate-500)]" />停用</span>}</td>
+                <td className="py-3 px-4">
+                  <button onClick={() => toggleStatus(a.id)} className="cursor-pointer">
+                    {a.status === 'active'
+                      ? <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[#10B981]/15 text-[#10B981]"><span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />正常</span>
+                      : <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-[var(--slate-700)] text-[var(--slate-400)]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--slate-500)]" />停用</span>}
+                  </button>
+                </td>
                 <td className="py-3 px-4 text-xs text-[var(--slate-500)]">{a.lastLogin}</td>
                 <td className="py-3 px-4"><div className="flex items-center justify-end gap-1">
-                  <button className="p-1.5 rounded text-[var(--slate-400)] hover:text-[#3366FF] hover:bg-[var(--dark-hover)]"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button className="p-1.5 rounded text-[var(--slate-400)] hover:text-[#F43F5E] hover:bg-[var(--dark-hover)]"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => openEdit(a)} className="p-1.5 rounded text-[var(--slate-400)] hover:text-[#3366FF] hover:bg-[var(--dark-hover)] transition-colors" title="编辑"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => handleDelete(a.id)} className="p-1.5 rounded text-[var(--slate-400)] hover:text-[#F43F5E] hover:bg-[var(--dark-hover)] transition-colors" title="删除"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      {editModal && <AccountModal title={`编辑账号: ${editModal.username}`} onSave={handleSaveEdit} />}
+      {/* Add Modal */}
+      {addModal && <AccountModal title="新增管理员账号" onSave={handleAdd} />}
     </div>
   );
 }

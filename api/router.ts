@@ -11,10 +11,12 @@ import { cmsRouter } from "./routers/cms-router";
 import { statsRouter } from "./routers/stats-router";
 import { routeStrategyRouter } from "./routers/route-strategy-router";
 import { channelPartnerRouter } from "./routers/channel-partner-router";
+import { providerRouter } from "./routers/provider-router";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
   auth: authRouter,
+  provider: providerRouter,
   model: modelRouter,
   key: keyRouter,
   log: logRouter,

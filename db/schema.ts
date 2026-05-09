@@ -68,6 +68,23 @@ export const platformKeys = mysqlTable("platform_keys", {
 export type PlatformKey = typeof platformKeys.$inferSelect;
 
 /* ================================================================
+   3b. Providers (供应商管理)
+   ================================================================ */
+export const providers = mysqlTable("providers", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  displayName: varchar("display_name", { length: 255 }).notNull(),
+  baseUrl: varchar("base_url", { length: 500 }),
+  description: text("description"),
+  sortOrder: int("sort_order").default(0).notNull(),
+  status: mysqlEnum("status", ["active", "inactive"]).default("active").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
+});
+
+export type Provider = typeof providers.$inferSelect;
+
+/* ================================================================
    4. Models (Multi-Level Pricing)
    ================================================================ */
 export const models = mysqlTable("models", {

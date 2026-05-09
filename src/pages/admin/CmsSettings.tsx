@@ -16,6 +16,8 @@ import {
   ChevronUp,
   Eye,
   Link,
+  Upload,
+  X,
 } from 'lucide-react';
 import { useCmsConfig, defaultCmsConfig, type CmsConfig, type CmsPricingModel, type CmsPricingFaq, type CmsFeatureConfig } from '@/hooks/useCmsConfig';
 
@@ -302,7 +304,48 @@ export default function CmsSettings() {
             <SectionCard title="网站基础信息" icon={Globe} defaultOpen>
               <div className="grid grid-cols-2 gap-4">
                 <TextInput label="网站名称" value={draft.site.name} onChange={(v) => updateDraft((d) => { d.site.name = v; return d; })} placeholder="AI Nexus" />
-                <TextInput label="Logo 路径" value={draft.site.logo} onChange={(v) => updateDraft((d) => { d.site.logo = v; return d; })} placeholder="/logo.svg" />
+                {/* Logo Upload */}
+                <div>
+                  <label className="block text-[12px] text-[var(--slate-400)] mb-1.5">Logo 图片</label>
+                  <div
+                    className="relative w-full h-10 rounded-lg bg-[var(--dark-bg)] border border-[var(--dark-border)] hover:border-[#3366FF] transition-colors cursor-pointer flex items-center gap-2 px-3 overflow-hidden"
+                    onClick={() => document.getElementById('logo-upload')?.click()}
+                  >
+                    <input
+                      id="logo-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            updateDraft((d) => { d.site.logo = ev.target?.result as string || '/logo.svg'; return d; });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {draft.site.logo && draft.site.logo.startsWith('data:') ? (
+                      <>
+                        <img src={draft.site.logo} alt="logo" className="h-6 w-auto rounded" />
+                        <span className="text-xs text-[var(--slate-400)] truncate flex-1">已上传</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); updateDraft((d) => { d.site.logo = '/logo.svg'; return d; }); }}
+                          className="p-0.5 rounded hover:bg-[var(--dark-hover)] text-[var(--slate-500)] hover:text-[#F43F5E]"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 text-[var(--slate-500)]" />
+                        <span className="text-xs text-[var(--slate-500)]">点击上传 Logo 图片</span>
+                      </>
+                    )}
+                  </div>
+                </div>
                 <TextInput label="Slogan / 标语" value={draft.site.tagline} onChange={(v) => updateDraft((d) => { d.site.tagline = v; return d; })} placeholder="一站式大模型聚合平台" />
                 <TextInput label="联系邮箱" value={draft.site.contactEmail} onChange={(v) => updateDraft((d) => { d.site.contactEmail = v; return d; })} placeholder="support@ainexus.com" />
                 <TextInput label="联系电话" value={draft.site.contactPhone} onChange={(v) => updateDraft((d) => { d.site.contactPhone = v; return d; })} placeholder="400-888-0000" />

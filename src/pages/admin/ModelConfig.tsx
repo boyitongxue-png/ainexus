@@ -3,6 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Pencil, Power, PowerOff, Brain, Image, Video, AudioLines, Hash, X, Cpu } from 'lucide-react';
 import { modelConfigEntries, providerHealthData } from '@/lib/adminMockData';
 import { providerColors } from '@/lib/adminMockData';
+import { trpc } from '@/providers/trpc';
+
+/* ── Provider Select: reads from provider management ── */
+function ProviderSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { data: providers } = trpc.provider.list.useQuery();
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full h-10 px-3 rounded-lg bg-[var(--dark-bg)] border border-[var(--dark-border)] text-sm text-white focus:outline-none focus:border-[#3366FF]"
+    >
+      <option value="">请选择供应商</option>
+      {providers?.filter(p => p.status === 'active').map(p => (
+        <option key={p.id} value={p.name}>{p.displayName || p.name}</option>
+      ))}
+    </select>
+  );
+}
 
 const modelTypeIcons: Record<string, typeof Brain> = {
   text: Brain,
@@ -274,19 +292,7 @@ export default function AdminModelConfig() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-[var(--slate-400)] mb-1.5">供应商 <span className="text-[#F43F5E]">*</span></label>
-                    <input
-                      type="text"
-                      list="provider-suggestions"
-                      value={form.provider || 'OpenAI'}
-                      onChange={(e) => setForm({ ...form, provider: e.target.value })}
-                      placeholder="输入供应商名称，如 OpenAI、Anthropic..."
-                      className="w-full h-10 px-3 rounded-lg bg-[var(--dark-bg)] border border-[var(--dark-border)] text-sm text-white placeholder-[var(--slate-500)] focus:outline-none focus:border-[#3366FF]"
-                    />
-                    <datalist id="provider-suggestions">
-                      {Array.from(new Set([...modelConfigEntries.map(m => m.provider), 'OpenAI', 'Anthropic', 'Stability AI', 'Runway', 'Pika', 'Google', 'Meta', 'Mistral', 'Cohere', 'DeepSeek', 'xAI', 'Alibaba'])).map((p) => (
-                        <option key={p} value={p} />
-                      ))}
-                    </datalist>
+                    <ProviderSelect value={form.provider || ''} onChange={(v) => setForm({ ...form, provider: v })} />
                   </div>
                   <div>
                     <label className="block text-xs text-[var(--slate-400)] mb-1.5">模型类型 <span className="text-[#F43F5E]">*</span></label>

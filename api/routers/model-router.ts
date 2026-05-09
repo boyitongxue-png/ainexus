@@ -29,14 +29,27 @@ export const modelRouter = createRouter({
       defaultRetries: z.number().default(3),
       status: z.enum(["active", "inactive", "beta"]).default("active"),
       capabilities: z.array(z.string()).default([]),
-      costPer1KTokens: z.string().default("0"),
-      inputCost: z.string().default("0"),
-      platformPrice: z.string().default("0"),
       contextWindow: z.number().default(0),
       description: z.string().optional(),
       baseUrl: z.string().optional(),
       upstreamKeyId: z.number().optional(),
       customPath: z.string().optional(),
+      // === Multi-Level Pricing Fields ===
+      billingMode: z.enum(["per_token", "per_image", "per_second", "per_request"]).default("per_token"),
+      billingUnit: z.string().default("1M"),
+      supplierInputCost: z.string().default("0"),
+      supplierOutputCost: z.string().default("0"),
+      exchangeRate: z.string().default("7.2000"),
+      myInputCost: z.string().default("0"),
+      myOutputCost: z.string().default("0"),
+      channelInputPrice: z.string().default("0"),
+      channelOutputPrice: z.string().default("0"),
+      retailInputPrice: z.string().default("0"),
+      retailOutputPrice: z.string().default("0"),
+      // Legacy fields
+      costPer1KTokens: z.string().default("0"),
+      inputCost: z.string().default("0"),
+      platformPrice: z.string().default("0"),
     }))
     .mutation(async ({ input }) => {
       const db = getDb();
@@ -56,14 +69,27 @@ export const modelRouter = createRouter({
       defaultRetries: z.number().optional(),
       status: z.enum(["active", "inactive", "beta"]).optional(),
       capabilities: z.array(z.string()).optional(),
-      costPer1KTokens: z.string().optional(),
-      inputCost: z.string().optional(),
-      platformPrice: z.string().optional(),
       contextWindow: z.number().optional(),
       description: z.string().optional(),
       baseUrl: z.string().optional(),
       upstreamKeyId: z.number().optional(),
       customPath: z.string().optional(),
+      // === Multi-Level Pricing Fields ===
+      billingMode: z.enum(["per_token", "per_image", "per_second", "per_request"]).optional(),
+      billingUnit: z.string().optional(),
+      supplierInputCost: z.string().optional(),
+      supplierOutputCost: z.string().optional(),
+      exchangeRate: z.string().optional(),
+      myInputCost: z.string().optional(),
+      myOutputCost: z.string().optional(),
+      channelInputPrice: z.string().optional(),
+      channelOutputPrice: z.string().optional(),
+      retailInputPrice: z.string().optional(),
+      retailOutputPrice: z.string().optional(),
+      // Legacy fields
+      costPer1KTokens: z.string().optional(),
+      inputCost: z.string().optional(),
+      platformPrice: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
       const db = getDb();

@@ -10,6 +10,7 @@ import { adminRouter } from "./routers/admin-router";
 import { cmsRouter } from "./routers/cms-router";
 import { statsRouter } from "./routers/stats-router";
 import { routeStrategyRouter } from "./routers/route-strategy-router";
+import { channelPartnerRouter } from "./routers/channel-partner-router";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),
@@ -24,6 +25,7 @@ export const appRouter = createRouter({
   cms: cmsRouter,
   stats: statsRouter,
   routeStrategy: routeStrategyRouter,
+  channelPartner: channelPartnerRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -68,7 +68,7 @@ export const platformKeys = mysqlTable("platform_keys", {
 export type PlatformKey = typeof platformKeys.$inferSelect;
 
 /* ================================================================
-   4. Models
+   4. Models (Multi-Level Pricing)
    ================================================================ */
 export const models = mysqlTable("models", {
   id: serial("id").primaryKey(),
@@ -81,21 +81,120 @@ export const models = mysqlTable("models", {
   defaultRetries: int("default_retries").default(3).notNull(),
   status: mysqlEnum("status", ["active", "inactive", "beta"]).default("active").notNull(),
   capabilities: json("capabilities"),
-  costPer1KTokens: decimal("cost_per_1k_tokens", { precision: 10, scale: 6 }).default("0").notNull(),
-  inputCost: decimal("input_cost", { precision: 10, scale: 2 }).default("0").notNull(),
-  platformPrice: decimal("platform_price", { precision: 10, scale: 2 }).default("0").notNull(),
+  contextWindow: int("context_window").default(0).notNull(),
+  description: text("description"),
   baseUrl: varchar("base_url", { length: 500 }),
   upstreamKeyId: bigint("upstream_key_id", { mode: "number", unsigned: true }),
   customPath: varchar("custom_path", { length: 500 }),
-  contextWindow: int("context_window").default(0).notNull(),
-  description: text("description"),
+
+  // === Billing Mode ===
+  billingMode: mysqlEnum("billing_mode", [
+    "per_token",     // 按 Token（文本/embedding）
+    "per_image",     // 按张（图片生成）
+    "per_second",    // 按秒（视频/音频）
+    "per_request",   // 按次（固定价格请求）
+  ]).default("per_token").notNull(),
+  billingUnit: varchar("billing_unit", { length: 50 }).default("1M").notNull(),
+
+  // === Supplier Cost (上游成本 - USD) ===
+  supplierInputCost: decimal("supplier_input_cost", { precision: 12, scale: 6 }).default("0").notNull(),
+  supplierOutputCost: decimal("supplier_output_cost", { precision: 12, scale: 6 }).default("0").notNull(),
+
+  // === Exchange Rate (USD -> RMB) ===
+  exchangeRate: decimal("exchange_rate", { precision: 10, scale: 4 }).default("7.2000").notNull(),
+
+  // === My Cost (我的成本 - RMB) ===
+  myInputCost: decimal("my_input_cost", { precision: 12, scale: 6 }).default("0").notNull(),
+  myOutputCost: decimal("my_output_cost", { precision: 12, scale: 6 }).default("0").notNull(),
+
+  // === Channel Partner Price (渠道伙伴进货价 - RMB) ===
+  channelInputPrice: decimal("channel_input_price", { precision: 12, scale: 6 }).default("0").notNull(),
+  channelOutputPrice: decimal("channel_output_price", { precision: 12, scale: 6 }).default("0").notNull(),
+
+  // === Retail Reference Price (零售指导价 - RMB) ===
+  retailInputPrice: decimal("retail_input_price", { precision: 12, scale: 6 }).default("0").notNull(),
+  retailOutputPrice: decimal("retail_output_price", { precision: 12, scale: 6 }).default("0").notNull(),
+
+  // === Legacy fields (兼容旧数据) ===
+  costPer1KTokens: decimal("cost_per_1k_tokens", { precision: 10, scale: 6 }).default("0").notNull(),
+  inputCost: decimal("input_cost", { precision: 10, scale: 2 }).default("0").notNull(),
+  platformPrice: decimal("platform_price", { precision: 10, scale: 2 }).default("0").notNull(),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type Model = typeof models.$inferSelect;
 
 /* ================================================================
-   5. Route Strategies
+   5. Channel Partners (渠道伙伴)
+   ================================================================ */
+export const channelPartners = mysqlTable("channel_partners", {
+  id: serial("id").primaryKey(),
+  userId: bigint("user_id", { mode: "number", unsigned: true }).notNull(),
+  companyName: varchar("company_name", { length: 255 }),
+  contactName: varchar("contact_name", { length: 255 }),
+  contactPhone: varchar("contact_phone", { length: 50 }),
+  // 加价模式：fixed_amount=固定金额, percentage=百分比, custom=自定义
+  markupType: mysqlEnum("markup_type", ["fixed_amount", "percentage", "custom"]).default("percentage").notNull(),
+  markupValue: decimal("markup_value", { precision: 10, scale: 4 }).default("20.0000").notNull(),
+  creditLimit: decimal("credit_limit", { precision: 12, scale: 2 }).default("0").notNull(),
+  status: mysqlEnum("status", ["active", "inactive", "suspended"]).default("active").notNull(),
+  remarks: text("remarks"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
+});
+
+export type ChannelPartner = typeof channelPartners.$inferSelect;
+
+/* ================================================================
+   6. Custom Pricing Rules (渠道伙伴自定义定价)
+   ================================================================ */
+export const customPricingRules = mysqlTable("custom_pricing_rules", {
+  id: serial("id").primaryKey(),
+  channelPartnerId: bigint("channel_partner_id", { mode: "number", unsigned: true }).notNull(),
+  modelId: bigint("model_id", { mode: "number", unsigned: true }).notNull(),
+  customInputPrice: decimal("custom_input_price", { precision: 12, scale: 6 }),
+  customOutputPrice: decimal("custom_output_price", { precision: 12, scale: 6 }),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull().$onUpdate(() => new Date()),
+});
+
+export type CustomPricingRule = typeof customPricingRules.$inferSelect;
+
+/* ================================================================
+   7. Usage Records (详细用量记录)
+   ================================================================ */
+export const usageRecords = mysqlTable("usage_records", {
+  id: serial("id").primaryKey(),
+  requestId: varchar("request_id", { length: 255 }).notNull(),
+  modelId: bigint("model_id", { mode: "number", unsigned: true }).notNull(),
+  modelName: varchar("model_name", { length: 255 }),
+  userId: bigint("user_id", { mode: "number", unsigned: true }),
+  platformKeyId: bigint("platform_key_id", { mode: "number", unsigned: true }),
+  // 用量统计
+  inputTokens: int("input_tokens").default(0),
+  outputTokens: int("output_tokens").default(0),
+  imageCount: int("image_count").default(0),
+  videoSeconds: decimal("video_seconds", { precision: 10, scale: 2 }).default("0"),
+  requestCount: int("request_count").default(1),
+  // 计费明细
+  inputCost: decimal("input_cost", { precision: 12, scale: 6 }).default("0"),
+  outputCost: decimal("output_cost", { precision: 12, scale: 6 }).default("0"),
+  totalCost: decimal("total_cost", { precision: 12, scale: 6 }).default("0"),
+  channelMarkup: decimal("channel_markup", { precision: 12, scale: 6 }).default("0"),
+  finalPrice: decimal("final_price", { precision: 12, scale: 6 }).default("0"),
+  status: mysqlEnum("status", ["success", "error", "refunded"]).default("success").notNull(),
+  duration: int("duration").default(0),
+  errorCode: varchar("error_code", { length: 50 }),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type UsageRecord = typeof usageRecords.$inferSelect;
+
+/* ================================================================
+   9. Route Strategies
    ================================================================ */
 export const routeStrategies = mysqlTable("route_strategies", {
   id: serial("id").primaryKey(),
@@ -111,7 +210,7 @@ export const routeStrategies = mysqlTable("route_strategies", {
 export type RouteStrategy = typeof routeStrategies.$inferSelect;
 
 /* ================================================================
-   6. Call Logs
+   10. Call Logs
    ================================================================ */
 export const callLogs = mysqlTable("call_logs", {
   id: serial("id").primaryKey(),
@@ -132,7 +231,7 @@ export const callLogs = mysqlTable("call_logs", {
 export type CallLog = typeof callLogs.$inferSelect;
 
 /* ================================================================
-   7. Async Tasks
+   11. Async Tasks
    ================================================================ */
 export const asyncTasks = mysqlTable("async_tasks", {
   id: serial("id").primaryKey(),
@@ -154,7 +253,7 @@ export const asyncTasks = mysqlTable("async_tasks", {
 export type AsyncTask = typeof asyncTasks.$inferSelect;
 
 /* ================================================================
-   8. Credit Transactions
+   12. Credit Transactions
    ================================================================ */
 export const creditTransactions = mysqlTable("credit_transactions", {
   id: serial("id").primaryKey(),
@@ -172,7 +271,7 @@ export const creditTransactions = mysqlTable("credit_transactions", {
 export type CreditTransaction = typeof creditTransactions.$inferSelect;
 
 /* ================================================================
-   9. Recharge Applications
+   13. Recharge Applications
    ================================================================ */
 export const rechargeApplications = mysqlTable("recharge_applications", {
   id: serial("id").primaryKey(),
@@ -195,7 +294,7 @@ export const rechargeApplications = mysqlTable("recharge_applications", {
 export type RechargeApplication = typeof rechargeApplications.$inferSelect;
 
 /* ================================================================
-   10. Team Members
+   14. Team Members
    ================================================================ */
 export const teamMembers = mysqlTable("team_members", {
   id: serial("id").primaryKey(),
@@ -210,7 +309,7 @@ export const teamMembers = mysqlTable("team_members", {
 export type TeamMember = typeof teamMembers.$inferSelect;
 
 /* ================================================================
-   11. Webhook Configs
+   15. Webhook Configs
    ================================================================ */
 export const webhookConfigs = mysqlTable("webhook_configs", {
   id: serial("id").primaryKey(),
@@ -225,7 +324,7 @@ export const webhookConfigs = mysqlTable("webhook_configs", {
 export type WebhookConfig = typeof webhookConfigs.$inferSelect;
 
 /* ================================================================
-   12. Admin Logs
+   16. Admin Logs
    ================================================================ */
 export const adminLogs = mysqlTable("admin_logs", {
   id: serial("id").primaryKey(),
@@ -243,7 +342,7 @@ export const adminLogs = mysqlTable("admin_logs", {
 export type AdminLog = typeof adminLogs.$inferSelect;
 
 /* ================================================================
-   13. System Settings
+   17. System Settings
    ================================================================ */
 export const systemSettings = mysqlTable("system_settings", {
   id: serial("id").primaryKey(),
@@ -259,7 +358,7 @@ export const systemSettings = mysqlTable("system_settings", {
 export type SystemSetting = typeof systemSettings.$inferSelect;
 
 /* ================================================================
-   14. CMS Configs
+   18. CMS Configs
    ================================================================ */
 export const cmsConfigs = mysqlTable("cms_configs", {
   id: serial("id").primaryKey(),
@@ -271,7 +370,7 @@ export const cmsConfigs = mysqlTable("cms_configs", {
 export type CmsConfig = typeof cmsConfigs.$inferSelect;
 
 /* ================================================================
-   15. User Credits
+   19. User Credits
    ================================================================ */
 export const userCredits = mysqlTable("user_credits", {
   id: serial("id").primaryKey(),

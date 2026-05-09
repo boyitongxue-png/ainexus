@@ -62,9 +62,24 @@ async function getModelPrice(modelId: number): Promise<{
   }
 
   const m = result[0];
+  // Use new multi-level pricing fields (per 1M tokens)
+  // Fall back to legacy fields for backward compatibility
+  const myInputCost = parseFloat(m.myInputCost || "0");
+  const myOutputCost = parseFloat(m.myOutputCost || "0");
+  const legacyInputCost = parseFloat(m.inputCost || "0");
+  const legacyOutputCost = parseFloat(m.platformPrice || "0");
+
+  // If new pricing fields are set (>0), use them (per 1M); otherwise use legacy (per 1K, need to scale)
+  if (myInputCost > 0) {
+    return {
+      inputCost: myInputCost,
+      outputCost: myOutputCost > 0 ? myOutputCost : legacyOutputCost * 1000,
+    };
+  }
+  // Legacy: per 1K prices, scale to per 1M
   return {
-    inputCost: parseFloat(m.inputCost || "0"),
-    outputCost: parseFloat(m.platformPrice || "0"),
+    inputCost: legacyInputCost * 1000,
+    outputCost: legacyOutputCost * 1000,
   };
 }
 
@@ -115,7 +130,7 @@ export async function proxyChatCompletion(
 
     // Estimate tokens and check/pre-deduct balance
     const estimatedTokens = estimateTokens(request.messages);
-    const estimatedInputCredits = (estimatedTokens / 1000) * pricing.inputCost;
+    const estimatedInputCredits = (estimatedTokens / 1000000) * pricing.inputCost;
     const estimatedTotalCredits = estimatedInputCredits * 3; // rough estimate for output
 
     if (userId) {
@@ -259,7 +274,7 @@ export async function proxyChatCompletionStream(
 
     // Pre-deduct estimated credits
     const estimatedTokens = estimateTokens(request.messages);
-    const estimatedInputCredits = (estimatedTokens / 1000) * pricing.inputCost;
+    const estimatedInputCredits = (estimatedTokens / 1000000) * pricing.inputCost;
     const estimatedTotalCredits = estimatedInputCredits * 3;
 
     if (userId) {
@@ -495,7 +510,7 @@ export async function proxyEmbeddings(
 
     const duration = Date.now() - startTime;
     const tokensUsed = embedding.usage?.total_tokens || 0;
-    const creditsUsed = (tokensUsed / 1000) * pricing.inputCost;
+    const creditsUsed = (tokensUsed / 1000000) * pricing.inputCost;
 
     if (userId) {
       await freezeCredits(userId, creditsUsed, `Embedding: ${ctx.modelName}`);

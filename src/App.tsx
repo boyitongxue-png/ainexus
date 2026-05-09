@@ -36,7 +36,6 @@ import AdminTaskMonitor from './pages/admin/TaskMonitor'
 import AdminLogsPage from './pages/admin/AdminLogs'
 import AdminSystemSettings from './pages/admin/SystemSettings'
 import AdminCmsSettings from './pages/admin/CmsSettings'
-import AdminChannelPartners from './pages/console/ChannelPartners'
 
 import AdminLogin from './pages/AdminLogin'
 
@@ -101,7 +100,6 @@ export default function App() {
         <Route path="/admin/admin-logs" element={<AdminLogsPage />} />
         <Route path="/admin/system-settings" element={<AdminSystemSettings />} />
         <Route path="/admin/cms" element={<AdminCmsSettings />} />
-        <Route path="/admin/channel-partners" element={<AdminChannelPartners />} />
       </Route>
 
       {/* Developer Portal routes - require portal key */}

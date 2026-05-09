@@ -61,6 +61,7 @@ export const consoleNav: NavItem[] = [
   { icon: Users, label: '团队成员', path: '/console/team' },
   { icon: Webhook, label: 'Webhook', path: '/console/webhooks' },
   { icon: Lock, label: '安全设置', path: '/console/security' },
+  { icon: Key, label: '上游密钥', path: '/console/upstream-keys' },
 ];
 
 export const adminNav: NavItem[] = [

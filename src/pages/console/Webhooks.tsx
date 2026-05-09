@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { trpc } from '@/providers/trpc';
 import {
   Webhook,
   Plus,
@@ -106,6 +107,23 @@ function generateSecret(): string {
 }
 
 export default function Webhooks() {
+
+  const utils = trpc.useUtils();
+  const { data: webhookData } = trpc.webhook.list.useQuery();
+  const webhookCreate = trpc.webhook.create.useMutation({ onSuccess: () => utils.webhook.list.invalidate() });
+  const webhookUpdate = trpc.webhook.update.useMutation({ onSuccess: () => utils.webhook.list.invalidate() });
+  const webhookDelete = trpc.webhook.delete.useMutation({ onSuccess: () => utils.webhook.list.invalidate() });
+  const apiWebhooks = useMemo(() => {
+    if (!webhookData) return [];
+    return webhookData.map((w: any) => ({
+      id: w.id, name: w.events ? String(w.events) : 'Webhook', url: w.webhookUrl || '',
+      events: Array.isArray(w.events) ? w.events : ['recharge', 'error'], secret: w.secret || '',
+      status: w.status === 'active' ? 'active' : 'inactive',
+      lastTriggered: w.lastTriggered ? new Date(w.lastTriggered).toLocaleString('zh-CN') : '从未触发',
+      createdAt: w.createdAt ? new Date(w.createdAt).toISOString().split('T')[0] : '',
+    }));
+  }, [webhookData]);
+
   const [webhooks, setWebhooks] = useState<WebhookData[]>(initialWebhooks);
   const [createOpen, setCreateOpen] = useState(false);
   const [editingWebhook, setEditingWebhook] = useState<WebhookData | null>(null);

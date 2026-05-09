@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Eye, Snowflake, Lock, Users, UserPlus, Building2, X, LockOpen,
   Key, Activity, CreditCard, Store, Percent, DollarSign, Tag,
+  AlertTriangle, RefreshCw,
 } from 'lucide-react';
 import { trpc } from '@/providers/trpc';
 
@@ -60,7 +61,7 @@ export default function AdminCustomers() {
   const [drawerTab, setDrawerTab] = useState<DrawerTab>('overview');
 
   /* ── tRPC ── */
-  const { data: partnerData, isLoading } = trpc.channelPartner.list.useQuery();
+  const { data: partnerData, isLoading, isError, error, refetch } = trpc.channelPartner.list.useQuery();
   const updatePartner = trpc.channelPartner.update.useMutation({
     onSuccess: () => { utils.channelPartner.list.invalidate(); },
   });
@@ -203,8 +204,32 @@ export default function AdminCustomers() {
         </div>
       )}
 
+      {/* Error */}
+      {isError && !isLoading && (
+        <div className="bg-[var(--dark-card)] border border-[#F43F5E]/30 rounded-xl p-12 text-center">
+          <AlertTriangle className="w-10 h-10 text-[#F43F5E] mx-auto mb-3" />
+          <p className="text-sm text-[#F43F5E] font-medium mb-1">数据加载失败</p>
+          <p className="text-xs text-[var(--slate-500)] mb-4">{error?.message || '请检查网络连接或稍后重试'}</p>
+          <button onClick={() => refetch()} className="h-9 px-4 bg-[#3366FF] text-white text-sm rounded-lg hover:bg-[#2244CC] transition-colors flex items-center gap-2 mx-auto">
+            <RefreshCw className="w-4 h-4" />重新加载
+          </button>
+        </div>
+      )}
+
+      {/* Empty: no partners in DB yet */}
+      {!isLoading && !isError && partners.length === 0 && (
+        <div className="bg-[var(--dark-card)] border border-[var(--dark-border)] rounded-xl p-12 text-center">
+          <Users className="w-10 h-10 text-[var(--slate-600)] mx-auto mb-3" />
+          <p className="text-sm text-[var(--slate-400)] font-medium mb-1">暂无客户数据</p>
+          <p className="text-xs text-[var(--slate-500)] mb-4">渠道伙伴列表为空，请在数据库中添加初始数据</p>
+          <button onClick={() => refetch()} className="h-9 px-4 bg-[var(--dark-hover)] text-[var(--slate-300)] text-sm rounded-lg hover:bg-[var(--dark-border)] transition-colors flex items-center gap-2 mx-auto border border-[var(--dark-border)]">
+            <RefreshCw className="w-4 h-4" />刷新
+          </button>
+        </div>
+      )}
+
       {/* Table */}
-      {!isLoading && (
+      {!isLoading && !isError && partners.length > 0 && (
         <div className="bg-[var(--dark-card)] border border-[var(--dark-border)] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -258,7 +283,7 @@ export default function AdminCustomers() {
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && (
+          {filtered.length === 0 && partners.length > 0 && (
             <div className="text-center py-12 text-sm text-[var(--slate-500)]">未找到匹配的客户</div>
           )}
         </div>

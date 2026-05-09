@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Briefcase,
@@ -21,6 +21,7 @@ import {
   Bar,
 } from 'recharts';
 import { Link } from 'react-router-dom';
+import { trpc } from '@/providers/trpc';
 import {
   providerHealthData,
   recentAlerts,
@@ -49,6 +50,18 @@ const itemVariants = {
 };
 
 export default function AdminOverview() {
+
+  const { data: dashData } = trpc.stats.adminDashboard.useQuery();
+  const _stats = useMemo(() => ({
+    totalApiCalls: dashData?.totalApiCalls || 0,
+    activeModels: dashData?.activeModels || 0,
+    totalUsers: dashData?.totalUsers || 0,
+    pendingTasks: dashData?.pendingTasks || 0,
+    pendingRecharges: dashData?.pendingRecharges || 0,
+    hourlyData: dashData?.hourlyData || [],
+    topModels: dashData?.topModels || [],
+  }), [dashData]);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = () => {

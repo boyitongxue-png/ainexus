@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Download, ChevronDown, ChevronUp, Shield, ShieldAlert, ShieldCheck, FileText } from 'lucide-react';
 import { adminLogEntries } from '@/lib/adminMockData';
 import { statusBadgeConfig } from '@/lib/adminMockData';
+import { trpc } from '@/providers/trpc';
 
 const moduleFilters = [
   { value: 'all', label: '全部模块' },
@@ -35,6 +36,17 @@ const sensitivityFilters = [
 ];
 
 export default function AdminLogs() {
+
+  const { data: logData } = trpc.admin.logList.useQuery({ limit: 100 });
+  const apiLogs = useMemo(() => {
+    if (!logData) return [];
+    return logData.items.map((l: any) => ({
+      id: l.id, timestamp: l.createdAt ? new Date(l.createdAt).toISOString() : '',
+      adminName: `管理员 ${l.adminId || 0}`, adminEmail: '', action: l.action || 'unknown',
+      targetType: 'system', targetId: '', targetName: l.details || '', details: l.details || '', ip: '',
+    }));
+  }, [logData]);
+
   const [logs] = useState(adminLogEntries);
   const [search, setSearch] = useState('');
   const [moduleFilter, setModuleFilter] = useState('all');

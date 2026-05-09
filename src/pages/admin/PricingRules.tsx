@@ -2,8 +2,23 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Pencil, Power, PowerOff, X } from 'lucide-react';
 import { pricingRules, modelConfigEntries } from '@/lib/adminMockData';
+import { trpc } from '@/providers/trpc';
 
 export default function PricingRules() {
+
+  const utils = trpc.useUtils();
+  const { data: modelData } = trpc.model.list.useQuery();
+  const modelUpdate = trpc.model.update.useMutation({ onSuccess: () => { utils.model.list.invalidate(); } });
+  const models = useMemo(() => {
+    if (!modelData) return [];
+    return modelData.map((m) => ({
+      id: m.id, name: m.name || '', provider: m.provider || '', modelType: m.modelType || 'text',
+      status: m.status || 'active', costPer1KInput: Number(m.myInputCost || m.inputCost || 0),
+      costPer1KOutput: Number(m.myOutputCost || m.platformPrice || 0), billingMode: m.billingMode || 'per_token',
+      defaultMarkup: 0, minPrice: 0, maxPrice: 0, description: m.description || '',
+    }));
+  }, [modelData]);
+
   const [rules, setRules] = useState(pricingRules);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');

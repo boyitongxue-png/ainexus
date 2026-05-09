@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, TrendingUp, AlertTriangle, Clock, Users, RefreshCw } from 'lucide-react';
+import { trpc } from '@/providers/trpc';
 import {
   AreaChart,
   Area,
@@ -32,6 +33,19 @@ const statusDistribution = [
 ];
 
 export default function RequestMonitor() {
+
+  const { data: logData } = trpc.log.list.useQuery({ limit: 200 });
+  const _logs = useMemo(() => {
+    if (!logData) return [];
+    return logData.items.map((l: any) => ({
+      id: String(l.id), timestamp: l.createdAt ? new Date(l.createdAt).toISOString() : '', method: 'POST',
+      path: '/v1/chat/completions', status: l.status === 'success' ? 200 : l.status === 'error' ? 500 : 504,
+      duration: l.duration || 0, userId: l.userId || 0, model: l.modelId ? `model_${l.modelId}` : 'unknown',
+      provider: 'OpenAI', tokensIn: l.inputTokens || 0, tokensOut: l.outputTokens || 0, credits: 0,
+      error: l.errorMessage || '',
+    }));
+  }, [logData]);
+
   const [timeRange, setTimeRange] = useState('1h');
   const [isRefreshing, setIsRefreshing] = useState(false);
 

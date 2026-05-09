@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Mail,
@@ -25,6 +25,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { useMockData } from '@/hooks/useMockData';
+import { trpc } from '@/providers/trpc';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -73,6 +74,18 @@ function getPasswordStrength(password: string): { label: string; color: string; 
 }
 
 export default function Security() {
+
+  const { data: keyData } = trpc.key.platformList.useQuery();
+  const keys = useMemo(() => {
+    if (!keyData) return [];
+    return keyData.map((k) => ({
+      id: k.id, name: k.name || '', type: 'read', status: k.status === 'active' ? 'active' : 'revoked',
+      createdAt: k.createdAt ? new Date(k.createdAt).toISOString().split('T')[0] : '',
+      lastUsed: k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString('zh-CN') : '从未使用',
+      usageCount: 0, ipWhitelist: '', rateLimit: k.rateLimit || 0,
+    }));
+  }, [keyData]);
+
   const { getSecuritySettings } = useMockData();
   const settings = getSecuritySettings();
 

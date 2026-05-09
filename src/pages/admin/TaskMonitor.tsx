@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import { taskMonitorEntries, taskDistributionData } from '@/lib/adminMockData';
 import { statusBadgeConfig } from '@/lib/adminMockData';
+import { trpc } from '@/providers/trpc';
 
 const statusFilters = [
   { value: 'all', label: '全部' },
@@ -36,6 +37,20 @@ const typeFilters = [
 ];
 
 export default function TaskMonitor() {
+
+  const utils = trpc.useUtils();
+  const { data: taskData } = trpc.log.taskList.useQuery({ limit: 100 });
+  const tasksFromApi = useMemo(() => {
+    if (!taskData) return [];
+    return taskData.items.map((t: any) => ({
+      id: String(t.id), taskId: t.taskId || `task_${t.id}`, type: t.taskType || 'image', status: t.taskStatus || 'pending',
+      userId: t.userId || 0, userName: `用户 ${t.userId || 0}`, model: 'DALL-E 3', prompt: '',
+      createdAt: t.createdAt ? new Date(t.createdAt).toISOString() : '',
+      completedAt: t.status === 'success' ? new Date().toISOString() : null,
+      progress: Number(t.progress) || 0, resultUrl: t.resultUrl || '', creditsUsed: 0, error: '',
+    }));
+  }, [taskData]);
+
   const [tasks, setTasks] = useState(taskMonitorEntries);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');

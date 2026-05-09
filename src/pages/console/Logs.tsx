@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trpc } from '@/providers/trpc';
 import {
   ScrollText,
   Search,
@@ -154,6 +155,24 @@ function StatCard({
 }
 
 export default function Logs() {
+
+  const { data: logData } = trpc.log.list.useQuery({ limit: 100 });
+  const logs = useMemo(() => {
+    if (!logData) return [];
+    return logData.items.map((l: any) => ({
+      id: String(l.id), requestId: l.requestId || `req_${l.id}`,
+      timestamp: l.createdAt ? new Date(l.createdAt).toISOString() : new Date().toISOString(),
+      apiType: l.type || 'chat', platformKey: l.userId ? `key_${l.userId}` : 'unknown',
+      provider: l.modelId ? 'OpenAI' : 'unknown', model: l.modelId ? `model_${l.modelId}` : 'unknown',
+      status: (l.status === 'error' ? 'failed' : l.status === 'success' ? 'success' : 'timeout'),
+      duration: l.duration || 0, creditsDeducted: 0, errorCode: l.errorCode,
+      requestParams: {}, routedModel: l.modelId ? `model_${l.modelId}` : 'unknown', fallbackUsed: false,
+      tokensInput: l.inputTokens || 0, tokensOutput: l.outputTokens || 0,
+      responseStatus: l.status === 'success' ? 200 : l.status === 'error' ? 500 : 504,
+      apiPath: '/v1/chat/completions', errorMessage: l.errorMessage,
+    }));
+  }, [logData]);
+
   const [timeRange, setTimeRange] = useState('today');
   const [searchQuery, setSearchQuery] = useState('');
   const [reqTypeFilter, setReqTypeFilter] = useState('all');

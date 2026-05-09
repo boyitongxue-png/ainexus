@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useMockData } from '@/hooks/useMockData';
+import { trpc } from '@/providers/trpc';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -78,6 +79,20 @@ const statusConfig: Record<Status, { label: string; color: string; bg: string }>
 };
 
 export default function Team() {
+
+  const utils = trpc.useUtils();
+  const { data: teamData } = trpc.team.list.useQuery();
+  const teamCreate = trpc.team.create.useMutation({ onSuccess: () => utils.team.list.invalidate() });
+  const teamUpdate = trpc.team.update.useMutation({ onSuccess: () => utils.team.list.invalidate() });
+  const teamDelete = trpc.team.delete.useMutation({ onSuccess: () => utils.team.list.invalidate() });
+  const apiMembers = useMemo(() => {
+    if (!teamData) return [];
+    return teamData.map((t: any) => ({
+      id: t.id, name: t.name || '', email: t.email || '', role: t.role || 'member', status: t.status || 'active',
+      avatar: '', lastActive: t.updatedAt ? new Date(t.updatedAt).toLocaleDateString('zh-CN') : '-', apiKeys: 0, totalCalls: 0,
+    }));
+  }, [teamData]);
+
   const { getTeamMembers } = useMockData();
   const existingMembers = getTeamMembers();
 

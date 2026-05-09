@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClipboardCheck, Check, X, Search, FileText } from 'lucide-react';
 import { rechargeRecords } from '@/lib/adminMockData';
 import { statusBadgeConfig } from '@/lib/adminMockData';
+import { trpc } from '@/providers/trpc';
 
 const statusFilters = [
   { value: 'all', label: '全部' },
@@ -12,6 +13,19 @@ const statusFilters = [
 ];
 
 export default function RechargeReview() {
+
+  const utils = trpc.useUtils();
+  const { data: rechargeData } = trpc.credit.rechargeList.useQuery();
+  const rechargeReview = trpc.credit.rechargeReview.useMutation({ onSuccess: () => { utils.credit.rechargeList.invalidate(); } });
+  const recharges = useMemo(() => {
+    if (!rechargeData) return [];
+    return rechargeData.items.map((r: any) => ({
+      id: r.id, userId: r.userId || 0, userName: `用户 ${r.userId || 0}`, userEmail: '',
+      amount: Number(r.amount) || 0, method: 'bank_transfer', status: r.status || 'pending',
+      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : '', description: r.description || '',
+    }));
+  }, [rechargeData]);
+
   const [records, setRecords] = useState(rechargeRecords);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');

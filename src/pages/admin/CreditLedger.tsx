@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Download, Plus, AlertTriangle, Coins, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { creditLedgerEntries } from '@/lib/adminMockData';
 import { creditTypeColors, creditTypeLabels } from '@/lib/adminMockData';
+import { trpc } from '@/providers/trpc';
 
 const typeFilters = [
   { value: 'all', label: '全部' },
@@ -14,6 +15,17 @@ const typeFilters = [
 ];
 
 export default function CreditLedger() {
+
+  const { data: txData } = trpc.credit.transactionList.useQuery();
+  const transactions = useMemo(() => {
+    if (!txData) return [];
+    return txData.items.map((t: any) => ({
+      id: t.id, timestamp: t.createdAt ? new Date(t.createdAt).toISOString() : '', userId: t.userId || 0,
+      userName: `用户 ${t.userId || 0}`, type: t.amount >= 0 ? 'credit' : 'debit',
+      amount: Math.abs(Number(t.amount) || 0), balance: 0, description: t.description || '', modelName: '',
+    }));
+  }, [txData]);
+
   const [entries, setEntries] = useState(creditLedgerEntries);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');

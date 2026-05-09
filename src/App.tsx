@@ -102,6 +102,7 @@ export default function App() {
         <Route path="/admin/system-settings" element={<AdminSystemSettings />} />
         <Route path="/admin/cms" element={<AdminCmsSettings />} />
         <Route path="/admin/providers" element={<AdminProviders />} />
+        <Route path="/console/upstream-keys" element={<ConsoleUpstreamKeys />} />
       </Route>
 
       {/* Developer Portal routes - require portal key */}

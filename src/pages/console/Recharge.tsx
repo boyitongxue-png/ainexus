@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Copy,
@@ -19,6 +19,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { trpc } from '@/providers/trpc';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -83,6 +84,23 @@ const bankInfo = {
 };
 
 export default function Recharge() {
+
+  const utils = trpc.useUtils();
+  const { data: rechargeData } = trpc.credit.rechargeList.useQuery();
+  const { data: balanceData } = trpc.credit.getBalance.useQuery();
+  const rechargeCreate = trpc.credit.rechargeCreate.useMutation({
+    onSuccess: () => { utils.credit.rechargeList.invalidate(); utils.credit.getBalance.invalidate(); }
+  });
+  const recharges = useMemo(() => {
+    if (!rechargeData) return [];
+    return rechargeData.items.map((r: any) => ({
+      id: String(r.id), date: r.createdAt ? new Date(r.createdAt).toISOString().split('T')[0] : '',
+      amount: Number(r.amount) || 0, method: 'bank_transfer', status: r.status || 'pending',
+      description: r.description || '', processedAt: r.status === 'approved' ? new Date().toISOString() : null,
+    }));
+  }, [rechargeData]);
+  const creditBalance = Number(balanceData?.balance || 0);
+
   const [applications, setApplications] = useState<RechargeApp[]>(initialApplications);
   const [form, setForm] = useState({
     paymentAmount: '',

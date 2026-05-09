@@ -97,13 +97,13 @@ export default function AdminCustomers() {
 
   /* ── Stats ── */
   const stats = [
-    { label: '总伙伴', value: partners.length, icon: Users, color: '#3366FF' },
+    { label: '总客户', value: partners.length, icon: Users, color: '#3366FF' },
     { label: '本月新增', value: partners.filter((p) => {
       const d = new Date(p.createdAt);
       const now = new Date();
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     }).length, icon: UserPlus, color: '#34D399' },
-    { label: '活跃伙伴', value: partners.filter((p) => p.status === 'active').length, icon: Store, color: '#22D3EE' },
+    { label: '活跃客户', value: partners.filter((p) => p.status === 'active').length, icon: Store, color: '#22D3EE' },
     { label: '已停用', value: partners.filter((p) => p.status === 'inactive' || p.status === 'suspended').length, icon: Snowflake, color: '#94A3B8' },
   ];
 
@@ -153,13 +153,13 @@ export default function AdminCustomers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-space text-3xl font-semibold text-white tracking-tight">伙伴管理</h1>
-          <p className="mt-1 text-sm text-[var(--slate-400)]">管理所有渠道合作伙伴、加价策略和额度信息</p>
+          <h1 className="font-space text-3xl font-semibold text-white tracking-tight">客户管理</h1>
+          <p className="mt-1 text-sm text-[var(--slate-400)]">管理所有客户、加价策略和额度信息</p>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--slate-500)]" />
           <input
-            type="text" placeholder="搜索伙伴名称、联系人..."
+            type="text" placeholder="搜索客户名称、联系人..."
             value={search} onChange={(e) => setSearch(e.target.value)}
             className="h-10 pl-9 pr-4 rounded-lg bg-[var(--dark-card)] border border-[var(--dark-border)] text-sm text-white placeholder-[var(--slate-500)] focus:outline-none focus:border-[#3366FF] w-72"
           />
@@ -210,7 +210,7 @@ export default function AdminCustomers() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-[var(--dark-sidebar)] border-b border-[var(--dark-border)]">
-                  <th className="py-3 px-5 text-xs text-[var(--slate-400)] uppercase tracking-wider font-medium">伙伴名称 / ID</th>
+                  <th className="py-3 px-5 text-xs text-[var(--slate-400)] uppercase tracking-wider font-medium">客户名称 / ID</th>
                   <th className="py-3 px-5 text-xs text-[var(--slate-400)] uppercase tracking-wider font-medium">联系人 / 联系方式</th>
                   <th className="py-3 px-5 text-xs text-[var(--slate-400)] uppercase tracking-wider font-medium">加价策略</th>
                   <th className="py-3 px-5 text-xs text-[var(--slate-400)] uppercase tracking-wider font-medium">状态</th>
@@ -228,7 +228,7 @@ export default function AdminCustomers() {
                           {(p.companyName?.[0] || p.contactName?.[0] || '?')}
                         </div>
                         <div>
-                          <p className="text-sm text-white font-medium">{p.companyName || `伙伴 #${p.userId}`}</p>
+                          <p className="text-sm text-white font-medium">{p.companyName || `客户 #${p.userId}`}</p>
                           <p className="text-xs text-[var(--slate-500)]">用户ID: {p.userId}</p>
                         </div>
                       </div>
@@ -259,7 +259,7 @@ export default function AdminCustomers() {
             </table>
           </div>
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-sm text-[var(--slate-500)]">未找到匹配的伙伴</div>
+            <div className="text-center py-12 text-sm text-[var(--slate-500)]">未找到匹配的客户</div>
           )}
         </div>
       )}
@@ -281,7 +281,7 @@ export default function AdminCustomers() {
                       {(selectedPartner.companyName?.[0] || selectedPartner.contactName?.[0] || '?')}
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-white">{selectedPartner.companyName || `伙伴 #${selectedPartner.userId}`}</h2>
+                      <h2 className="text-lg font-semibold text-white">{selectedPartner.companyName || `客户 #${selectedPartner.userId}`}</h2>
                       {statusBadge(selectedPartner.status)}
                     </div>
                   </div>
@@ -315,7 +315,7 @@ export default function AdminCustomers() {
                     <div className="bg-[var(--dark-bg)] border border-[var(--dark-border)] rounded-lg p-4">
                       <h3 className="text-sm font-semibold text-white mb-3">基本信息</h3>
                       <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div><span className="text-[var(--slate-500)]">伙伴ID</span><p className="text-white font-jetbrains">{selectedPartner.id}</p></div>
+                        <div><span className="text-[var(--slate-500)]">客户ID</span><p className="text-white font-jetbrains">{selectedPartner.id}</p></div>
                         <div><span className="text-[var(--slate-500)]">用户ID</span><p className="text-white font-jetbrains">{selectedPartner.userId}</p></div>
                         <div><span className="text-[var(--slate-500)]">联系人</span><p className="text-white">{selectedPartner.contactName || '-'}</p></div>
                         <div><span className="text-[var(--slate-500)]">联系电话</span><p className="text-white">{selectedPartner.contactPhone || '-'}</p></div>
@@ -368,7 +368,7 @@ export default function AdminCustomers() {
                   <div className="text-center py-12 text-sm text-[var(--slate-500)]">
                     <Building2 className="w-12 h-12 mx-auto mb-3 text-[var(--slate-600)]" />
                     <p>工作区功能开发中</p>
-                    <p className="text-xs mt-1">伙伴创建的工作区将显示在此处</p>
+                    <p className="text-xs mt-1">客户创建的工作区将显示在此处</p>
                   </div>
                 )}
 
@@ -377,7 +377,7 @@ export default function AdminCustomers() {
                   <div className="text-center py-12 text-sm text-[var(--slate-500)]">
                     <Key className="w-12 h-12 mx-auto mb-3 text-[var(--slate-600)]" />
                     <p>API Key 列表</p>
-                    <p className="text-xs mt-1">伙伴创建的 API Key 将显示在此处</p>
+                    <p className="text-xs mt-1">客户创建的 API Key 将显示在此处</p>
                   </div>
                 )}
 
@@ -416,13 +416,13 @@ export default function AdminCustomers() {
                       <h3 className="text-sm font-semibold text-white mb-3">加价说明</h3>
                       <div className="space-y-2 text-xs text-[var(--slate-400)]">
                         {selectedPartner.markupType === 'percentage' && (
-                          <p>百分比加价模式下，伙伴的售价 = 平台进货价 × (1 + 加价百分比)。当前设置为 {parseFloat(selectedPartner.markupValue).toFixed(1)}%，即售价是进货价的 {(100 + parseFloat(selectedPartner.markupValue)).toFixed(1)}%。</p>
+                          <p>百分比加价模式下，客户的售价 = 平台进货价 × (1 + 加价百分比)。当前设置为 {parseFloat(selectedPartner.markupValue).toFixed(1)}%，即售价是进货价的 {(100 + parseFloat(selectedPartner.markupValue)).toFixed(1)}%。</p>
                         )}
                         {selectedPartner.markupType === 'fixed_amount' && (
-                          <p>固定金额加价模式下，伙伴的售价 = 平台进货价 + 固定加价金额。当前加价为 {parseFloat(selectedPartner.markupValue).toFixed(2)}。</p>
+                          <p>固定金额加价模式下，客户的售价 = 平台进货价 + 固定加价金额。当前加价为 {parseFloat(selectedPartner.markupValue).toFixed(2)}。</p>
                         )}
                         {selectedPartner.markupType === 'custom' && (
-                          <p>自定义定价模式下，伙伴可以为每个模型独立设置售价，不受默认加价规则限制。</p>
+                          <p>自定义定价模式下，客户可以为每个模型独立设置售价，不受默认加价规则限制。</p>
                         )}
                       </div>
                     </div>

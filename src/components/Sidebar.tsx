@@ -68,7 +68,6 @@ export const adminNav: NavItem[] = [
   { icon: ClipboardCheck, label: '充值审核', path: '/admin/recharge-review' },
   { icon: BookOpen, label: '积分台账', path: '/admin/credit-ledger' },
   { icon: Settings, label: '模型配置', path: '/admin/model-config' },
-  { icon: Users, label: '伙伴管理', path: '/admin/customers' },
   { icon: Tag, label: '价格规则', path: '/admin/pricing-rules' },
   { icon: Activity, label: '请求监控', path: '/admin/request-monitor' },
   { icon: Image, label: '任务监控', path: '/admin/task-monitor' },

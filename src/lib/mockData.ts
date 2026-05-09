@@ -27,7 +27,7 @@ export interface ModelEntry {
   type: string;
   capabilities: string[];
   status: 'active' | 'inactive' | 'beta';
-  costPer1KTokens: number;
+  costPer1MTokens: number;
   /** 平台积分定价 (用户端看到的价格) */
   platformPrice?: number;
   description: string;
@@ -171,17 +171,17 @@ export const platformKeys: PlatformKey[] = [
 ];
 
 export const modelCatalog: ModelEntry[] = [
-  { id: 'm1', name: 'GPT-4o', provider: 'OpenAI', type: 'text', capabilities: ['聊天', '函数调用', '视觉'], status: 'active', costPer1KTokens: 0.005, platformPrice: 15, description: 'OpenAI 最新旗舰模型' },
-  { id: 'm2', name: 'GPT-4', provider: 'OpenAI', type: 'text', capabilities: ['聊天', '函数调用'], status: 'active', costPer1KTokens: 0.03, platformPrice: 30, description: '高性能文本模型' },
-  { id: 'm3', name: 'GPT-3.5 Turbo', provider: 'OpenAI', type: 'text', capabilities: ['聊天', '函数调用'], status: 'active', costPer1KTokens: 0.0005, platformPrice: 1.5, description: '高性价比文本模型' },
-  { id: 'm4', name: 'Claude 3.5 Sonnet', provider: 'Anthropic', type: 'text', capabilities: ['聊天', '函数调用', '长上下文'], status: 'active', costPer1KTokens: 0.003, platformPrice: 9, description: 'Anthropic 先进模型' },
-  { id: 'm5', name: 'Claude 3 Opus', provider: 'Anthropic', type: 'text', capabilities: ['聊天', '函数调用', '长上下文'], status: 'active', costPer1KTokens: 0.015, platformPrice: 45, description: 'Anthropic 顶级模型' },
-  { id: 'm6', name: 'DALL-E 3', provider: 'OpenAI', type: 'image', capabilities: ['图片生成'], status: 'active', costPer1KTokens: 0.04, platformPrice: 40, description: '高质量图片生成' },
-  { id: 'm7', name: 'Stable Diffusion 3', provider: 'Stability AI', type: 'image', capabilities: ['图片生成'], status: 'active', costPer1KTokens: 0.025, platformPrice: 25, description: '开源图片生成模型' },
-  { id: 'm8', name: 'Runway Gen-3', provider: 'Runway', type: 'video', capabilities: ['视频生成'], status: 'beta', costPer1KTokens: 0.5, platformPrice: 500, description: '高质量视频生成' },
-  { id: 'm9', name: 'Pika 1.5', provider: 'Pika', type: 'video', capabilities: ['视频生成'], status: 'beta', costPer1KTokens: 0.45, platformPrice: 450, description: '创意视频生成' },
-  { id: 'm10', name: 'Text Embedding 3', provider: 'OpenAI', type: 'embedding', capabilities: ['Embedding'], status: 'active', costPer1KTokens: 0.0001, platformPrice: 0.1, description: '文本向量化' },
-  { id: 'm11', name: 'Whisper v3', provider: 'OpenAI', type: 'audio', capabilities: ['语音转文字'], status: 'active', costPer1KTokens: 0.006, platformPrice: 6, description: '语音转录模型' },
+  { id: 'm1', name: 'GPT-4o', provider: 'OpenAI', type: 'text', capabilities: ['聊天', '函数调用', '视觉'], status: 'active', costPer1MTokens: 0.005, platformPrice: 15, description: 'OpenAI 最新旗舰模型' },
+  { id: 'm2', name: 'GPT-4', provider: 'OpenAI', type: 'text', capabilities: ['聊天', '函数调用'], status: 'active', costPer1MTokens: 0.03, platformPrice: 30, description: '高性能文本模型' },
+  { id: 'm3', name: 'GPT-3.5 Turbo', provider: 'OpenAI', type: 'text', capabilities: ['聊天', '函数调用'], status: 'active', costPer1MTokens: 0.0005, platformPrice: 1.5, description: '高性价比文本模型' },
+  { id: 'm4', name: 'Claude 3.5 Sonnet', provider: 'Anthropic', type: 'text', capabilities: ['聊天', '函数调用', '长上下文'], status: 'active', costPer1MTokens: 0.003, platformPrice: 9, description: 'Anthropic 先进模型' },
+  { id: 'm5', name: 'Claude 3 Opus', provider: 'Anthropic', type: 'text', capabilities: ['聊天', '函数调用', '长上下文'], status: 'active', costPer1MTokens: 0.015, platformPrice: 45, description: 'Anthropic 顶级模型' },
+  { id: 'm6', name: 'DALL-E 3', provider: 'OpenAI', type: 'image', capabilities: ['图片生成'], status: 'active', costPer1MTokens: 0.04, platformPrice: 40, description: '高质量图片生成' },
+  { id: 'm7', name: 'Stable Diffusion 3', provider: 'Stability AI', type: 'image', capabilities: ['图片生成'], status: 'active', costPer1MTokens: 0.025, platformPrice: 25, description: '开源图片生成模型' },
+  { id: 'm8', name: 'Runway Gen-3', provider: 'Runway', type: 'video', capabilities: ['视频生成'], status: 'beta', costPer1MTokens: 0.5, platformPrice: 500, description: '高质量视频生成' },
+  { id: 'm9', name: 'Pika 1.5', provider: 'Pika', type: 'video', capabilities: ['视频生成'], status: 'beta', costPer1MTokens: 0.45, platformPrice: 450, description: '创意视频生成' },
+  { id: 'm10', name: 'Text Embedding 3', provider: 'OpenAI', type: 'embedding', capabilities: ['Embedding'], status: 'active', costPer1MTokens: 0.0001, platformPrice: 0.1, description: '文本向量化' },
+  { id: 'm11', name: 'Whisper v3', provider: 'OpenAI', type: 'audio', capabilities: ['语音转文字'], status: 'active', costPer1MTokens: 0.006, platformPrice: 6, description: '语音转录模型' },
 ];
 
 export const routeStrategies: RouteStrategy[] = [
@@ -325,13 +325,13 @@ export const pricingPlans = [
 ];
 
 export const modelPrices = [
-  { model: 'GPT-4o', type: '文本', inputPrice: '¥0.015/1K tokens', outputPrice: '¥0.045/1K tokens' },
-  { model: 'GPT-4', type: '文本', inputPrice: '¥0.09/1K tokens', outputPrice: '¥0.18/1K tokens' },
-  { model: 'GPT-3.5 Turbo', type: '文本', inputPrice: '¥0.0015/1K tokens', outputPrice: '¥0.002/1K tokens' },
-  { model: 'Claude 3.5 Sonnet', type: '文本', inputPrice: '¥0.009/1K tokens', outputPrice: '¥0.015/1K tokens' },
+  { model: 'GPT-4o', type: '文本', inputPrice: '¥0.015/1M tokens', outputPrice: '¥0.045/1M tokens' },
+  { model: 'GPT-4', type: '文本', inputPrice: '¥0.09/1M tokens', outputPrice: '¥0.18/1M tokens' },
+  { model: 'GPT-3.5 Turbo', type: '文本', inputPrice: '¥0.0015/1M tokens', outputPrice: '¥0.002/1M tokens' },
+  { model: 'Claude 3.5 Sonnet', type: '文本', inputPrice: '¥0.009/1M tokens', outputPrice: '¥0.015/1M tokens' },
   { model: 'DALL-E 3', type: '图片', inputPrice: '-', outputPrice: '¥0.04/张' },
   { model: 'Stable Diffusion 3', type: '图片', inputPrice: '-', outputPrice: '¥0.025/张' },
-  { model: 'Text Embedding 3', type: 'Embedding', inputPrice: '¥0.0005/1K tokens', outputPrice: '-' },
+  { model: 'Text Embedding 3', type: 'Embedding', inputPrice: '¥0.0005/1M tokens', outputPrice: '-' },
 ];
 
 // FAQ data

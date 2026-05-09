@@ -198,7 +198,7 @@ export default function PortalOverview() {
                   <p className="text-[11px] text-[var(--slate-500)]">{model.provider}</p>
                 </div>
                 <span className="text-[12px] font-jetbrains text-[#A855F7]">
-                  {model.platformPrice || model.costPer1KTokens} 积分
+                  {model.platformPrice || model.costPer1MTokens} 积分
                 </span>
               </div>
             ))}

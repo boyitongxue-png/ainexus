@@ -212,7 +212,7 @@ export default function Pricing() {
 
   /* Calculator math */
   const totalTokens = calcValues.textCalls * calcValues.avgTokens;
-  const textCredits = Math.floor((totalTokens / 1000) * 80); // avg 80 credits per 1K tokens
+  const textCredits = Math.floor((totalTokens / 1000000) * 80); // avg 80 credits per 1M tokens
   const imageCredits = calcValues.imageCount * 350; // avg 350 credits per image
   const videoCredits = calcValues.videoSeconds * 900; // avg 900 credits per second
   const totalCredits = textCredits + imageCredits + videoCredits;
@@ -362,8 +362,8 @@ export default function Pricing() {
                     <tr className="bg-[var(--dark-sidebar)]">
                       <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase rounded-tl-lg">模型名称</th>
                       <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase">供应商</th>
-                      <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase">输入积分/1K tokens</th>
-                      <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase">输出积分/1K tokens</th>
+                      <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase">输入积分/1M tokens</th>
+                      <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase">输出积分/1M tokens</th>
                       <th className="py-3 px-5 text-caption text-[var(--slate-400)] uppercase rounded-tr-lg">备注</th>
                     </tr>
                   </thead>

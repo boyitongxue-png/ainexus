@@ -196,11 +196,11 @@ export default function AdminModelConfig() {
                   <td className="py-4 px-5 font-jetbrains text-xs text-[#7A9FFF]">{m.apiIdentifier}</td>
                   <td className="py-4 px-5 text-sm text-[var(--slate-300)]">{m.asyncSupport ? '是' : '否'}</td>
                   <td className="py-4 px-5 text-sm text-white">{m.defaultTimeout}s / {m.defaultRetries}次</td>
-                  <td className="py-4 px-5 font-jetbrains text-sm text-[var(--slate-500)]">{m.inputCost ?? m.costPer1KTokens ?? 0}</td>
-                  <td className="py-4 px-5 font-jetbrains text-sm text-white">{m.platformPrice ?? m.costPer1KTokens ?? 0}</td>
+                  <td className="py-4 px-5 font-jetbrains text-sm text-[var(--slate-500)]">{m.inputCost ?? m.costPer1MTokens ?? 0}</td>
+                  <td className="py-4 px-5 font-jetbrains text-sm text-white">{m.platformPrice ?? m.costPer1MTokens ?? 0}</td>
                   <td className="py-4 px-5">
                     <span className="text-xs font-medium text-[#10B981]">
-                      +{((m.platformPrice ?? m.costPer1KTokens ?? 0) - (m.inputCost ?? m.costPer1KTokens ?? 0)).toFixed(4)}
+                      +{((m.platformPrice ?? m.costPer1MTokens ?? 0) - (m.inputCost ?? m.costPer1MTokens ?? 0)).toFixed(4)}
                     </span>
                   </td>
                   <td className="py-4 px-5">
@@ -321,18 +321,18 @@ export default function AdminModelConfig() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[var(--slate-400)] mb-1.5">上游成本 (积分/1K) <span className="text-[#F43F5E]">*</span></label>
+                    <label className="block text-xs text-[var(--slate-400)] mb-1.5">上游成本 (积分/1M) <span className="text-[#F43F5E]">*</span></label>
                     <input
                       type="number"
                       step="0.0001"
-                      value={form.inputCost ?? form.costPer1KTokens ?? 0}
+                      value={form.inputCost ?? form.costPer1MTokens ?? 0}
                       onChange={(e) => setForm({ ...form, inputCost: parseFloat(e.target.value) })}
                       placeholder="供应商实际成本"
                       className="w-full h-10 px-3 rounded-lg bg-[var(--dark-bg)] border border-[var(--dark-border)] text-sm text-white placeholder-[var(--slate-500)] focus:outline-none focus:border-[#3366FF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[var(--slate-400)] mb-1.5">平台积分定价 (积分/1K) <span className="text-[#F43F5E]">*</span></label>
+                    <label className="block text-xs text-[var(--slate-400)] mb-1.5">平台积分定价 (积分/1M) <span className="text-[#F43F5E]">*</span></label>
                     <input
                       type="number"
                       step="0.0001"
@@ -384,16 +384,16 @@ export default function AdminModelConfig() {
                 </div>
 
                 {/* 利润空间提示 */}
-                {((form.platformPrice ?? 0) > 0 || (form.inputCost ?? form.costPer1KTokens ?? 0) > 0) && (
+                {((form.platformPrice ?? 0) > 0 || (form.inputCost ?? form.costPer1MTokens ?? 0) > 0) && (
                   <div className="p-3 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-between">
                     <span className="text-xs text-[var(--slate-400)]">利润空间</span>
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-semibold text-[#10B981]">
-                        +{((form.platformPrice ?? 0) - (form.inputCost ?? form.costPer1KTokens ?? 0)).toFixed(4)} 积分/1K
+                        +{((form.platformPrice ?? 0) - (form.inputCost ?? form.costPer1MTokens ?? 0)).toFixed(4)} 积分/1M
                       </span>
                       <span className="text-xs text-[#10B981]">
-                        ({(form.inputCost ?? form.costPer1KTokens ?? 0) > 0
-                          ? (((form.platformPrice ?? 0) - (form.inputCost ?? form.costPer1KTokens ?? 0)) / (form.inputCost ?? form.costPer1KTokens ?? 0) * 100).toFixed(0)
+                        ({(form.inputCost ?? form.costPer1MTokens ?? 0) > 0
+                          ? (((form.platformPrice ?? 0) - (form.inputCost ?? form.costPer1MTokens ?? 0)) / (form.inputCost ?? form.costPer1MTokens ?? 0) * 100).toFixed(0)
                           : 0}%)
                       </span>
                     </div>

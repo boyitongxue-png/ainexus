@@ -115,8 +115,8 @@ export const models = mysqlTable("models", {
   retailInputPrice: decimal("retail_input_price", { precision: 12, scale: 6 }).default("0").notNull(),
   retailOutputPrice: decimal("retail_output_price", { precision: 12, scale: 6 }).default("0").notNull(),
 
-  // === Legacy fields (兼容旧数据) ===
-  costPer1KTokens: decimal("cost_per_1k_tokens", { precision: 10, scale: 6 }).default("0").notNull(),
+  // === Legacy fields (兼容旧数据) - 计费单位已从 1K 升级为 1M ===
+  costPer1MTokens: decimal("cost_per_1m_tokens", { precision: 10, scale: 6 }).default("0").notNull(),
   inputCost: decimal("input_cost", { precision: 10, scale: 2 }).default("0").notNull(),
   platformPrice: decimal("platform_price", { precision: 10, scale: 2 }).default("0").notNull(),
 

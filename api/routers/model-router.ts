@@ -47,7 +47,7 @@ export const modelRouter = createRouter({
       retailInputPrice: z.string().default("0"),
       retailOutputPrice: z.string().default("0"),
       // Legacy fields
-      costPer1KTokens: z.string().default("0"),
+      costPer1MTokens: z.string().default("0"),
       inputCost: z.string().default("0"),
       platformPrice: z.string().default("0"),
     }))
@@ -87,7 +87,7 @@ export const modelRouter = createRouter({
       retailInputPrice: z.string().optional(),
       retailOutputPrice: z.string().optional(),
       // Legacy fields
-      costPer1KTokens: z.string().optional(),
+      costPer1MTokens: z.string().optional(),
       inputCost: z.string().optional(),
       platformPrice: z.string().optional(),
     }))

@@ -115,10 +115,10 @@ export default function PortalModels() {
               </div>
               <div className="text-right">
                 <span className="text-[18px] font-semibold text-white font-jetbrains">
-                  {model.platformPrice || model.costPer1KTokens}
+                  {model.platformPrice || model.costPer1MTokens}
                 </span>
                 <span className="text-[11px] text-[var(--slate-500)] ml-1">
-                  积分 / {model.type === 'text' || model.type === 'embedding' ? '1K tokens' : model.type === 'image' ? '张' : '秒'}
+                  积分 / {model.type === 'text' || model.type === 'embedding' ? '1M tokens' : model.type === 'image' ? '张' : '秒'}
                 </span>
               </div>
             </div>

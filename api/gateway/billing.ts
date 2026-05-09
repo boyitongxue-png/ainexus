@@ -13,20 +13,21 @@ import {
 import { eq, sql, and } from "drizzle-orm";
 import type { BillingResult, UsageInfo } from "./types";
 
-// Credit cost per 1K tokens for different operation types
+// Credit cost per 1M tokens for different operation types
 const CREDIT_MULTIPLIER = 100; // 1 RMB = 100 credits
 
 /**
  * Calculate credits needed based on token usage and model pricing
+ * Billing unit: per 1M tokens (not per 1K)
  */
 export function calculateCredits(
   usage: UsageInfo,
-  inputCostPer1K: number,   // credits per 1K input tokens
-  outputCostPer1K: number   // credits per 1K output tokens
+  inputCostPer1M: number,   // credits per 1M input tokens
+  outputCostPer1M: number   // credits per 1M output tokens
 ): BillingResult {
-  const promptCredits = (usage.promptTokens / 1000) * inputCostPer1K;
+  const promptCredits = (usage.promptTokens / 1000000) * inputCostPer1M;
   const completionCredits =
-    (usage.completionTokens / 1000) * outputCostPer1K;
+    (usage.completionTokens / 1000000) * outputCostPer1M;
   const totalCredits = promptCredits + completionCredits;
 
   // Round to 4 decimal places

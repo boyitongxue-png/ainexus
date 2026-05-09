@@ -582,7 +582,7 @@ function ModelSupportSection() {
 
 function PricingCTASection() {
   const highlights = [
-    { model: '文本模型', price: '¥0.001', unit: '/ 1K tokens' },
+    { model: '文本模型', price: '¥0.001', unit: '/ 1M tokens' },
     { model: '图片生成', price: '¥0.05', unit: '/ 张' },
     { model: '视频生成', price: '¥0.50', unit: '/ 秒' },
   ];

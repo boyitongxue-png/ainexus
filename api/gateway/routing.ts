@@ -116,9 +116,9 @@ export async function getModelPricing(modelId: number) {
     modelId: m.id,
     name: m.name,
     provider: m.provider,
-    inputCost: parseFloat(m.inputCost || "0"), // credits per 1K input tokens
-    platformPrice: parseFloat(m.platformPrice || "0"), // credits per 1K output tokens
-    costPer1K: parseFloat(m.costPer1KTokens || "0"),
+    inputCost: parseFloat(m.inputCost || "0"), // credits per 1M input tokens
+    platformPrice: parseFloat(m.platformPrice || "0"), // credits per 1M output tokens
+    costPer1M: parseFloat(m.costPer1MTokens || "0"),
   };
 }
 

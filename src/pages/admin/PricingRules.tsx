@@ -28,7 +28,7 @@ export default function PricingRules() {
 
   const openAdd = () => {
     setForm({
-      billingUnit: '1K tokens',
+      billingUnit: '1M tokens',
       creditCost: 0,
       tierRules: [],
       failRefund: true,
@@ -280,11 +280,11 @@ export default function PricingRules() {
                   <div>
                     <label className="block text-xs text-[var(--slate-400)] mb-1.5">计费单位</label>
                     <select
-                      value={form.billingUnit || '1K tokens'}
+                      value={form.billingUnit || '1M tokens'}
                       onChange={(e) => setForm({ ...form, billingUnit: e.target.value })}
                       className="w-full h-10 px-3 rounded-lg bg-[var(--dark-bg)] border border-[var(--dark-border)] text-sm text-white focus:outline-none focus:border-[#3366FF]"
                     >
-                      <option value="1K tokens">1K tokens</option>
+                      <option value="1M tokens">1M tokens</option>
                       <option value="per image">per image</option>
                       <option value="per video">per video</option>
                       <option value="per request">per request</option>

@@ -35,7 +35,7 @@ export default function DashboardLayout({ type }: DashboardLayoutProps) {
   const navigate = useNavigate();
 
   const user = useMemo(() => getUser(), []);
-  const isAdmin = user?.role === 'superadmin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
   const userName = user?.name || 'User';
   const userAvatar = user?.avatar || userName.charAt(0).toUpperCase();
 

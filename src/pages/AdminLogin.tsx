@@ -58,7 +58,7 @@ export default function AdminLogin() {
         id: 'admin_1',
         email,
         name: '系统管理员',
-        role: 'superadmin',
+        role: 'admin',
         avatar: 'A',
       }));
       setIsLoading(false);

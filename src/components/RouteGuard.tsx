@@ -16,6 +16,10 @@ function getUser() {
   }
 }
 
+function isAdminRole(role: string | undefined): boolean {
+  return role === 'admin' || role === 'superadmin';
+}
+
 function isAuthenticated() {
   return !!localStorage.getItem('ainexus_auth_token') && !!getUser();
 }
@@ -24,10 +28,11 @@ export default function RouteGuard({ children, requireAuth = false, requireAdmin
   const location = useLocation();
   const user = getUser();
   const auth = isAuthenticated();
+  const userIsAdmin = isAdminRole(user?.role);
 
   // Admin login page: redirect to admin overview if already admin
   if (location.pathname === '/admin-login') {
-    if (auth && user?.role === 'superadmin') {
+    if (auth && userIsAdmin) {
       return <Navigate to="/admin/overview" replace />;
     }
     return <>{children}</>;
@@ -35,7 +40,7 @@ export default function RouteGuard({ children, requireAuth = false, requireAdmin
 
   // Regular login page: redirect to console if already logged in
   if (location.pathname === '/login' || location.pathname === '/register') {
-    if (auth && user?.role !== 'superadmin') {
+    if (auth && !userIsAdmin) {
       return <Navigate to="/console/overview" replace />;
     }
     return <>{children}</>;
@@ -48,12 +53,12 @@ export default function RouteGuard({ children, requireAuth = false, requireAdmin
   }
 
   // Require admin role
-  if (requireAdmin && user?.role !== 'superadmin') {
+  if (requireAdmin && !userIsAdmin) {
     return <Navigate to="/console/overview" replace />;
   }
 
   // Non-admin trying to access admin routes
-  if (location.pathname.startsWith('/admin') && user?.role !== 'superadmin') {
+  if (location.pathname.startsWith('/admin') && !userIsAdmin) {
     return <Navigate to="/console/overview" replace />;
   }
 

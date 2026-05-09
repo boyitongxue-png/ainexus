@@ -204,7 +204,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, navItems, type 
       </nav>
 
       {/* Admin / Console switch */}
-      {getUserRole() === 'superadmin' && (
+      {(getUserRole() === 'admin' || getUserRole() === 'superadmin') && (
         <div className="p-2 border-t border-[var(--dark-border)]">
           <Link
             to={type === 'console' ? '/admin/overview' : '/console/overview'}

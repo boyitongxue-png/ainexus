@@ -202,24 +202,16 @@ export default function Sidebar({ isCollapsed, onToggleCollapse, navItems, type 
         ))}
       </nav>
 
-      {/* Admin / Console switch */}
-      {(getUserRole() === 'admin' || getUserRole() === 'superadmin') && (
+      {/* Admin / Console switch: only show "enter admin" from console */}
+      {(getUserRole() === 'admin' || getUserRole() === 'superadmin') && type === 'console' && (
         <div className="p-2 border-t border-[var(--dark-border)]">
           <Link
-            to={type === 'console' ? '/admin/overview' : '/console/overview'}
-            className={`
-              flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors
-              ${type === 'console'
-                ? 'text-[#F59E0B] hover:bg-[var(--dark-hover)] hover:text-[#FBBF24]'
-                : 'text-[#3366FF] hover:bg-[var(--dark-hover)] hover:text-[#5580FF]'
-              }
-            `}
+            to="/admin/overview"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-[#F59E0B] hover:bg-[var(--dark-hover)] hover:text-[#FBBF24]"
           >
             <ShieldAlert className="w-5 h-5" />
             {!isCollapsed && (
-              <span className="text-sm font-medium">
-                {type === 'console' ? '进入管理后台' : '返回用户控制台'}
-              </span>
+              <span className="text-sm font-medium">进入管理后台</span>
             )}
           </Link>
         </div>

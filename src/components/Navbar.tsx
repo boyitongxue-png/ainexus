@@ -99,12 +99,14 @@ export default function Navbar() {
                 </Link>
               )
             )}
-            <Link
-              to="/admin-login"
-              className="text-sm font-medium text-[#F59E0B] hover:text-[#FBBF24] transition-colors duration-200 ml-2 border-l border-[var(--dark-border)] pl-4"
-            >
-              管理后台
-            </Link>
+            {location.pathname !== '/register' && (
+              <Link
+                to="/admin-login"
+                className="text-sm font-medium text-[#F59E0B] hover:text-[#FBBF24] transition-colors duration-200 ml-2 border-l border-[var(--dark-border)] pl-4"
+              >
+                管理后台
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}

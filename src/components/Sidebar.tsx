@@ -75,6 +75,8 @@ export const adminNav: NavItem[] = [
   { icon: Activity, label: '请求监控', path: '/admin/request-monitor' },
   { icon: Image, label: '任务监控', path: '/admin/task-monitor' },
   { icon: FileText, label: '管理员日志', path: '/admin/admin-logs' },
+  // Keep billing discoverable as a first-level admin module.
+  { icon: CreditCard, label: '计费与支付', path: '/admin/billing' },
   { icon: Cog, label: '系统设置', path: '/admin/system-settings' },
   { icon: Palette, label: '内容管理', path: '/admin/cms' },
 ];

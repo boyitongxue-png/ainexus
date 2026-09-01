@@ -96,6 +96,7 @@ export default function App() {
         <Route path="/admin/credit-ledger" element={<AdminCreditLedger />} />
         <Route path="/admin/model-config" element={<AdminModelConfig />} />
         <Route path="/admin/pricing-rules" element={<AdminPricingRules />} />
+        <Route path="/admin/billing" element={<AdminPricingRules />} />
         <Route path="/admin/request-monitor" element={<AdminRequestMonitor />} />
         <Route path="/admin/task-monitor" element={<AdminTaskMonitor />} />
         <Route path="/admin/admin-logs" element={<AdminLogsPage />} />
